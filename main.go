@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,13 @@ func bubbleSort(array []int) {
 }
 
 func main() {
+
+	port, ok := os.LookupEnv("PORT")
+
+	if !ok {
+		port = "3000"
+	}
+
 	router := gin.Default()
 	router.POST("/benchmark", benchmark)
 	router.GET("/", func(ctx *gin.Context) {
@@ -46,5 +54,5 @@ func main() {
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "method not found"})
 	})
-	router.Run(":8080")
+	router.Run(":" + port)
 }
