@@ -11,6 +11,6 @@ COPY *.go ./
 
 RUN go build -o /benchmark
 
-EXPOSE 8080
+EXPOSE ${PORT}
 
 CMD ["/benchmark"]

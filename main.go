@@ -20,7 +20,7 @@ func benchmark(c *gin.Context) {
 		}(array)
 	}
 
-	c.IndentedJSON(http.StatusOK, nestedArray)
+	c.IndentedJSON(http.StatusOK, gin.H{})
 }
 
 func bubbleSort(array []int) {
