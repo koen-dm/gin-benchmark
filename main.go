@@ -7,20 +7,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func benchmark(c *gin.Context) {
+func benchmark(ctx *gin.Context) {
+	useParallel := ctx.DefaultQuery("parallel", "false")
+
 	var nestedArray [][]int
 
-	if err := c.BindJSON(&nestedArray); err != nil {
+	if err := ctx.BindJSON(&nestedArray); err != nil {
 		return
 	}
 
 	for _, array := range nestedArray {
-		go func(x []int) {
-			bubbleSort(x)
-		}(array)
+		if useParallel == "true" {
+			go func(x []int) {
+				bubbleSort(x)
+			}(array)
+		} else {
+			bubbleSort(array)
+		}
+
 	}
 
-	c.IndentedJSON(http.StatusOK, gin.H{})
+	ctx.IndentedJSON(http.StatusOK, gin.H{})
 }
 
 func bubbleSort(array []int) {
@@ -47,6 +54,7 @@ func main() {
 		ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Hello World"})
 
 	})
+
 	router.NoMethod(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusMethodNotAllowed, gin.H{"message": "method not allowed"})
 	})
@@ -54,5 +62,6 @@ func main() {
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"message": "method not found"})
 	})
+
 	router.Run(":" + port)
 }
